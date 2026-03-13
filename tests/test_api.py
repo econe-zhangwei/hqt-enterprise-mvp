@@ -45,6 +45,13 @@ def test_login_required_for_business_apis(client):
     assert no_auth_me.status_code == 401
 
 
+def test_healthz_returns_ok(client):
+    resp = client.get("/healthz")
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "ok"
+    assert resp.json()["bootstrap_on_startup"] is False
+
+
 def test_full_flow_with_password_login(client):
     headers = login_and_get_headers(client)
     enterprise_id = create_enterprise(client, headers=headers)

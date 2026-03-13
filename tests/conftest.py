@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 TEST_DB_PATH = (Path(__file__).resolve().parent / "test_suite.db").resolve()
 os.environ["DATABASE_URL"] = f"sqlite:///{TEST_DB_PATH}"
+os.environ["BOOTSTRAP_ON_STARTUP"] = "false"
 
 from app.db import Base, SessionLocal, engine, get_session  # noqa: E402
 from app.main import app  # noqa: E402

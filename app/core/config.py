@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     app_name: str = "惠企通企业端 MVP"
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/hqt"
     cors_allow_origins: str = "*"
+    bootstrap_on_startup: bool = True
     llm_provider: str = "glm"
     llm_api_key: str | None = None
     llm_base_url: str = "https://open.bigmodel.cn/api/paas/v4"

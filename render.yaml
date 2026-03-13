@@ -6,7 +6,7 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     autoDeployTrigger: commit
-    healthCheckPath: /docs
+    healthCheckPath: /healthz
     envVars:
       - key: DATABASE_URL
         value: sqlite:///./data/hqt.db

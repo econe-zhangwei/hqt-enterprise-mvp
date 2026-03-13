@@ -1,5 +1,7 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
+import logging
+from threading import Event, Lock, Thread
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,13 +16,44 @@ from app.db import Base, SessionLocal, engine
 from app.services.policy_seed import seed_policies
 from app.services.policy_structurer import sync_policies_from_knowledge_base
 
+logger = logging.getLogger(__name__)
+_bootstrap_lock = Lock()
+_bootstrap_started = Event()
+_bootstrap_finished = Event()
+_bootstrap_error: str | None = None
+
+
+def _bootstrap_policy_data() -> None:
+    global _bootstrap_error
+
+    try:
+        with SessionLocal() as session:
+            seed_policies(session)
+            sync_policies_from_knowledge_base(session)
+        _bootstrap_error = None
+    except Exception as exc:  # pragma: no cover - defensive logging for production startup
+        _bootstrap_error = str(exc)
+        logger.exception("Startup bootstrap failed")
+    finally:
+        _bootstrap_finished.set()
+
+
+def _ensure_bootstrap_started() -> None:
+    if _bootstrap_started.is_set():
+        return
+
+    with _bootstrap_lock:
+        if _bootstrap_started.is_set():
+            return
+        _bootstrap_started.set()
+        Thread(target=_bootstrap_policy_data, name="policy-bootstrap", daemon=True).start()
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=engine)
-    with SessionLocal() as session:
-        seed_policies(session)
-        sync_policies_from_knowledge_base(session)
+    if settings.bootstrap_on_startup:
+        _ensure_bootstrap_started()
     yield
 
 
@@ -38,6 +71,26 @@ app.include_router(router)
 
 static_dir = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+
+@app.get("/healthz")
+def healthz() -> dict[str, str | bool]:
+    bootstrap_state = "disabled"
+    if settings.bootstrap_on_startup:
+        if _bootstrap_error:
+            bootstrap_state = "error"
+        elif _bootstrap_finished.is_set():
+            bootstrap_state = "ready"
+        elif _bootstrap_started.is_set():
+            bootstrap_state = "running"
+        else:
+            bootstrap_state = "pending"
+
+    return {
+        "status": "ok",
+        "bootstrap_on_startup": settings.bootstrap_on_startup,
+        "bootstrap_state": bootstrap_state,
+    }
 
 
 def _frontend_entry() -> str:
