@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>惠企通企业端 MVP</title>
+    <style>
+      :root {
+        --bg: #f7fafc;
+        --card: #ffffff;
+        --text: #1f2937;
+        --sub: #4b5563;
+        --primary: #0f766e;
+        --ok: #16a34a;
+        --warn: #d97706;
+        --bad: #dc2626;
+      }
+      body {
+        margin: 0;
+        font-family: "PingFang SC", "Noto Sans SC", sans-serif;
+        background: radial-gradient(circle at 12% 18%, #d3f3ef 0%, var(--bg) 40%);
+        color: var(--text);
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 20px auto;
+        padding: 0 14px 40px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 14px;
+        box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+      }
+      .grid { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .row { display: grid; gap: 8px; grid-template-columns: 1fr auto; align-items: center; }
+      .three { display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); }
+      input, select, textarea, button {
+        width: 100%; box-sizing: border-box; border-radius: 10px; padding: 10px;
+        border: 1px solid #d1d5db; font-size: 14px;
+      }
+      button { border: 0; background: var(--primary); color: white; font-weight: 600; cursor: pointer; }
+      button.ghost { background: #e6fffb; color: #0f766e; border: 1px solid #99f6e4; }
+      h1 { margin: 0 0 6px; font-size: 24px; }
+      h2 { margin: 0 0 8px; font-size: 18px; }
+      .muted { color: var(--sub); font-size: 13px; }
+      .hidden { display: none; }
+      .policy { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; margin: 10px 0; }
+      .pill { display: inline-block; border-radius: 999px; padding: 4px 8px; font-size: 12px; font-weight: 700; }
+      .eligible { background: #dcfce7; color: var(--ok); }
+      .potential { background: #fff7ed; color: var(--warn); }
+      .flex { display: flex; gap: 8px; flex-wrap: wrap; }
+      .stat { border: 1px dashed #d1d5db; border-radius: 10px; padding: 8px; text-align: center; }
+      ul { margin: 6px 0; padding-left: 18px; }
+      @media (max-width: 780px) { .grid, .three { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h1>惠企通企业端 MVP</h1>
+        <div class="muted">两段式流程：免登录看摘要，登录后看完整匹配与提交工单。</div>
+      </div>
+
+      <div class="card">
+        <h2>1) 企业信息填写</h2>
+        <div class="grid">
+          <input id="enterprise_name" placeholder="企业名称" value="上海某科技有限公司" />
+          <input id="uscc" placeholder="统一社会信用代码(18位)" value="913100000000000001" />
+          <select id="region_code">
+            <option value="SH-ALL">全上海</option>
+            <option value="SH-PD" selected>浦东新区 SH-PD</option>
+            <option value="SH-MH">闵行区 SH-MH</option>
+          </select>
+          <input id="industry_code" placeholder="行业代码" value="C39" />
+          <input id="contact_name" placeholder="联系人" value="张三" />
+          <input id="contact_mobile" placeholder="手机号" value="13800138000" />
+          <select id="employee_scale">
+            <option value="10-49">10-49</option>
+            <option value="50-99" selected>50-99</option>
+            <option value="100-299">100-299</option>
+          </select>
+          <input id="revenue_range" placeholder="营收区间" value="1000万-5000万" />
+          <input id="rd_ratio" placeholder="研发占比" value="6" />
+          <input id="ip_count" placeholder="知识产权数量" value="12" />
+          <input id="qualification_tags" placeholder="资质(逗号分隔)" value="高新技术企业,创新型中小企业" />
+        </div>
+        <div style="margin-top:10px" class="flex">
+          <button id="saveBtn">保存并开始匹配</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2) 初筛摘要（免登录）</h2>
+        <div id="summaryStats" class="three muted">暂无摘要</div>
+        <div id="summaryPreview" class="muted" style="margin-top:8px"></div>
+        <div class="flex" style="margin-top:10px">
+          <button class="ghost" id="viewFullBtn">查看完整结果（需登录）</button>
+        </div>
+      </div>
+
+      <div class="card" id="loginCard">
+        <h2>3) 登录（Mock 短信）</h2>
+        <div class="row">
+          <input id="loginMobile" placeholder="手机号" />
+          <button id="sendCodeBtn" style="width:130px">发送验证码</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <input id="smsCode" placeholder="验证码（开发环境固定 000000）" />
+          <button id="loginBtn" style="width:130px">登录</button>
+        </div>
+        <div class="muted" id="loginInfo" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <h2>4) 完整匹配结果（登录后）</h2>
+        <div id="fullSummary" class="muted">未登录或未加载</div>
+        <div id="fullResults"></div>
+      </div>
+
+      <div class="card">
+        <h2>5) 政策详情</h2>
+        <div id="policyDetail" class="muted">点击某条政策的“查看详情”加载。</div>
+      </div>
+
+      <div class="card">
+        <h2>6) AI 问答</h2>
+        <div class="row">
+          <input id="question" placeholder="例如：为什么我不符合这条政策？" />
+          <button id="askBtn" style="width:120px">提问</button>
+        </div>
+        <div id="answer" class="muted" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <h2>7) 转人工工单（登录后）</h2>
+        <textarea id="ticketDesc" rows="3" placeholder="请输入你的问题描述"></textarea>
+        <input id="callbackTime" placeholder="预约联系时间（可选）例如：2026-03-05 10:00" style="margin-top:8px" />
+        <div class="flex" style="margin-top:10px">
+          <button id="ticketBtn">提交工单</button>
+          <button class="ghost" id="ticketQueryBtn">查询工单状态</button>
+        </div>
+        <div id="ticketInfo" class="muted" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <script>
+      const state = {
+        enterpriseId: null,
+        taskId: null,
+        topPolicyId: null,
+        token: localStorage.getItem("hqt_token") || "",
+        ticketId: null,
+      };
+
+      function getHeaders() {
+        const headers = { "Content-Type": "application/json" };
+        if (state.token) headers.Authorization = `Bearer ${state.token}`;
+        return headers;
+      }
+
+      async function api(path, options = {}) {
+        const res = await fetch(`/api/v1${path}`, {
+          headers: getHeaders(),
+          ...options,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "请求失败");
+        return data;
+      }
+
+      function getProfilePayload() {
+        return {
+          enterprise_name: document.getElementById("enterprise_name").value.trim(),
+          uscc: document.getElementById("uscc").value.trim(),
+          region_code: document.getElementById("region_code").value,
+          industry_code: document.getElementById("industry_code").value.trim(),
+          contact_name: document.getElementById("contact_name").value.trim(),
+          contact_mobile: document.getElementById("contact_mobile").value.trim(),
+          employee_scale: document.getElementById("employee_scale").value,
+          revenue_range: document.getElementById("revenue_range").value.trim(),
+          rd_ratio: Number(document.getElementById("rd_ratio").value),
+          ip_count: Number(document.getElementById("ip_count").value),
+          qualification_tags: document.getElementById("qualification_tags").value
+            .split(",")
+            .map((v) => v.trim())
+            .filter(Boolean),
+        };
+      }
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function renderOutline(sections) {
+        if (!sections || !sections.length) return "";
+        return `
+          <div style="margin:12px 0 10px; display:grid; gap:10px;">
+            ${sections
+              .map(
+                (section) => `
+                  <div style="padding:10px 12px; border:1px solid #dfe9f6; border-radius:12px; background:#f9fcff;">
+                    <div style="font-weight:700; margin-bottom:6px;">${escapeHtml(section.title)}</div>
+                    <ul style="margin:0; padding-left:18px;">
+                      ${(section.items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+                    </ul>
+                  </div>
+                `
+              )
+              .join("")}
+          </div>
+        `;
+      }
+
+      function renderSummary(data) {
+        const s = data.summary;
+        document.getElementById("summaryStats").innerHTML = `
+          <div class="stat">可申报<br /><strong>${s.eligible_count}</strong></div>
+          <div class="stat">需完善<br /><strong>${s.potential_count}</strong></div>
+        `;
+        const preview = (data.results || [])
+          .map((r) => `• ${r.policy_title}（${r.eligibility}）`) 
+          .join("<br />");
+        document.getElementById("summaryPreview").innerHTML = preview || "暂无样例政策";
+      }
+
+      function renderFull(data) {
+        const s = data.summary;
+        document.getElementById("fullSummary").textContent = `可申报 ${s.eligible_count} / 需完善 ${s.potential_count}`;
+        const box = document.getElementById("fullResults");
+        box.innerHTML = "";
+
+        data.results.forEach((r) => {
+          const sourceHtml = r.source_url
+            ? `<div class="muted">来源：<a href="${r.source_url}" target="_blank">政策原文</a></div>`
+            : "";
+          const div = document.createElement("div");
+          div.className = "policy";
+          div.innerHTML = `
+            <div class="row">
+              <div><strong>${r.policy_title}</strong> <span class="pill ${r.eligibility}">${r.eligibility}</span></div>
+              <div>评分 ${r.score}</div>
+            </div>
+            <div class="muted">下一步：${r.next_action}</div>
+            ${sourceHtml}
+            <div class="muted" style="margin-top:6px">命中原因：</div>
+            <ul>${(r.reasons || []).map((x) => `<li>${x}</li>`).join("") || "<li>无</li>"}</ul>
+            <div class="muted">缺口项：</div>
+            <ul>${(r.missing_items || []).map((x) => `<li>${x}</li>`).join("") || "<li>无</li>"}</ul>
+            <div class="flex"><button class="ghost" data-policy-id="${r.policy_id}">查看详情</button></div>
+          `;
+          box.appendChild(div);
+        });
+
+        if (data.results.length > 0) state.topPolicyId = data.results[0].policy_id;
+
+        box.querySelectorAll("button[data-policy-id]").forEach((btn) => {
+          btn.onclick = async () => {
+            try {
+              const policyId = btn.getAttribute("data-policy-id");
+              const detail = await api(`/policies/${policyId}`);
+              state.topPolicyId = policyId;
+              const p = detail.data;
+              const sourceHtml = p.source_url
+                ? `原文链接：<a href="${p.source_url}" target="_blank">${p.source_url}</a><br />`
+                : "";
+              document.getElementById("policyDetail").innerHTML = `
+                <strong>${p.title}</strong><br />
+                支持方式：${p.support_type}<br />
+                生效时间：${p.effective_from} ~ ${p.effective_to || "长期"}<br />
+                更新时间：${p.updated_at || "-"}<br />
+                ${renderOutline(p.outline_sections)}
+                ${sourceHtml}
+                材料：${(p.required_materials || []).join("、") || "无"}
+              `;
+            } catch (e) {
+              alert(e.message);
+            }
+          };
+        });
+      }
+
+      async function loadSummary() {
+        const res = await api(`/policy-matches/${state.taskId}?view=summary`);
+        renderSummary(res.data);
+      }
+
+      async function loadFull() {
+        const res = await api(`/policy-matches/${state.taskId}?view=full`);
+        renderFull(res.data);
+      }
+
+      document.getElementById("saveBtn").onclick = async () => {
+        try {
+          const profile = await api("/enterprise-profiles", { method: "POST", body: JSON.stringify(getProfilePayload()) });
+          state.enterpriseId = profile.data.enterprise_id;
+          document.getElementById("loginMobile").value = document.getElementById("contact_mobile").value.trim();
+
+          const task = await api("/policy-matches", { method: "POST", body: JSON.stringify({ enterprise_id: state.enterpriseId }) });
+          state.taskId = task.data.task_id;
+          await loadSummary();
+          document.getElementById("fullSummary").textContent = "已生成摘要，请先登录查看完整结果。";
+        } catch (e) {
+          alert(e.message);
+        }
+      };
+
+      document.getElementById("viewFullBtn").onclick = async () => {
+        try {
+          if (!state.taskId) throw new Error("请先完成一次匹配");
+          if (!state.token) throw new Error("请先登录");
+          await loadFull();
+        } catch (e) {
+          alert(e.message);
+        }
+      };
+
+      document.getElementById("sendCodeBtn").onclick = async () => {
+        try {
+          const mobile = document.getElementById("loginMobile").value.trim();
+          const res = await api("/auth/sms/send", { method: "POST", body: JSON.stringify({ mobile }) });
+          document.getElementById("loginInfo").textContent = `验证码已发送（开发环境验证码：${res.data.mock_code}）`;
+        } catch (e) {
+          alert(e.message);
+        }
+      };
+
+      document.getElementById("loginBtn").onclick = async () => {
+        try {
+          const mobile = document.getElementById("loginMobile").value.trim();
+          const code = document.getElementById("smsCode").value.trim();
+          const res = await api("/auth/sms/login", { method: "POST", body: JSON.stringify({ mobile, code }) });
+          state.token = res.data.token;
+          localStorage.setItem("hqt_token", state.token);
+          document.getElementById("loginInfo").textContent = "登录成功，可查看完整结果并提交工单。";
+          if (state.taskId) await loadFull();
+        } catch (e) {
+          alert(e.message);
+        }
+      };
+
+      document.getElementById("askBtn").onclick = async () => {
+        try {
+          if (!state.enterpriseId) throw new Error("请先完成匹配");
+          const question = document.getElementById("question").value.trim();
+          const res = await api("/qa/policy", {
+            method: "POST",
+            body: JSON.stringify({ enterprise_id: state.enterpriseId, question, context_policy_id: state.topPolicyId }),
+          });
+          const refs = (res.data.citations || []).map((x) => `${x.title}: ${x.url}`).join("；");
+          document.getElementById("answer").textContent = `${res.data.answer}\n引用：${refs || "无"}\n建议转人工：${res.data.recommend_handoff ? "是" : "否"}`;
+        } catch (e) {
+          alert(e.message);
+        }
+      };
+
+      document.getElementById("ticketBtn").onclick = async () => {
+        try {
+          if (!state.enterpriseId) throw new Error("请先完成匹配");
+          const r = await api("/service-tickets", {
+            method: "POST",
+            body: JSON.stringify({
+              enterprise_id: state.enterpriseId,
+              issue_type: "eligibility_consult",
+              description: document.getElementById("ticketDesc").value.trim(),
+              contact_mobile: document.getElementById("contact_mobile").value.trim(),
+              callback_time: document.getElementById("callbackTime").value.trim() || null,
+            }),
+          });
+          state.ticketId = r.data.ticket_id;
+          document.getElementById("ticketInfo").textContent = `工单已提交：${state.ticketId}，状态：${r.data.status}`;
+        } catch (e) {
+          alert(e.message);
+        }
+      };
+
+      document.getElementById("ticketQueryBtn").onclick = async () => {
+        try {
+          if (!state.ticketId) throw new Error("请先提交工单");
+          const r = await api(`/service-tickets/${state.ticketId}`);
+          document.getElementById("ticketInfo").textContent = `工单状态：${r.data.status}，最近记录：${(r.data.logs || []).slice(-1)[0]?.message || "-"}`;
+        } catch (e) {
+          alert(e.message);
+        }
+      };
+    </script>
+  </body>
+</html>

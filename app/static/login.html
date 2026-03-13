@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>惠企通 - 企业登录</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="auth-wrap">
+      <section class="auth-card">
+        <aside class="auth-hero">
+          <div>
+            <span class="eyebrow eyebrow-light">企业政策服务平台</span>
+            <h1>惠企通<br />政策匹配工作台</h1>
+            <p>登录后即可维护企业资料、执行政策匹配、使用 AI 顾问并提交人工工单。</p>
+          </div>
+          <div class="auth-points">
+            <div class="auth-point">企业画像智能补齐，减少重复填报。</div>
+            <div class="auth-point">政策匹配可解释，结果可追溯。</div>
+            <div class="auth-point">AI 先答疑，复杂问题一键转人工。</div>
+          </div>
+        </aside>
+
+        <section class="auth-form">
+          <span class="eyebrow">账号登录</span>
+          <h2>企业用户登录</h2>
+          <p class="muted">开发默认账号可直接进入系统，后续会替换为正式登录体系。</p>
+          <label>
+            用户名
+            <input id="username" value="enterprise" placeholder="请输入用户名" />
+          </label>
+          <label>
+            密码
+            <input id="password" type="password" value="123456" placeholder="请输入密码" />
+          </label>
+          <button id="loginBtn">进入工作台</button>
+          <p id="loginMsg" class="muted"></p>
+          <p class="muted">默认账号：`enterprise` / 默认密码：`123456`</p>
+        </section>
+      </section>
+    </main>
+
+    <script src="/static/login.js"></script>
+  </body>
+</html>

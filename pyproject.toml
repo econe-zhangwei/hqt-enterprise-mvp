@@ -1,0 +1,31 @@
+[project]
+name = "hqt-enterprise-mvp"
+version = "0.1.0"
+description = "惠企通企业端 MVP"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.116.0",
+  "uvicorn[standard]>=0.35.0",
+  "sqlalchemy>=2.0.36",
+  "psycopg[binary]>=3.2.0",
+  "pydantic>=2.10.0",
+  "pydantic-settings>=2.7.0",
+  "python-multipart>=0.0.20",
+  "httpx>=0.28.0",
+  "beautifulsoup4>=4.12.3",
+  "pypdf>=5.3.1"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0"
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = "-q"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"

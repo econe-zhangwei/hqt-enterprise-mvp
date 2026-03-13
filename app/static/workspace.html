@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>惠企通 - 企业工作台</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="workspace">
+      <aside class="sidebar">
+        <div class="brand">
+          <h2>惠企通</h2>
+          <p class="muted">企业政策服务工作台</p>
+        </div>
+
+        <div class="nav" id="nav">
+          <button data-view="overview" class="active">总览</button>
+          <button data-view="profile">企业信息</button>
+          <button data-view="match">政策匹配</button>
+          <button data-view="assistant">AI 助手</button>
+          <button data-view="ticket">工单中心</button>
+        </div>
+
+        <div></div>
+
+        <div class="panel">
+          <div id="authUser" class="muted">已登录：-</div>
+          <div style="margin-top:10px"><button class="btn-danger" id="logoutBtn">退出登录</button></div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="header">
+          <div class="title">
+            <h1 id="pageTitle" style="font-size:24px">总览</h1>
+            <p id="pageDesc" class="muted">查看当前企业政策匹配整体状态与建议动作。</p>
+          </div>
+          <div class="tag">企业画像 -> 智能匹配 -> AI 解读 -> 人工协同</div>
+        </header>
+
+        <section id="view-overview" class="view active">
+          <div class="hero-panel">
+            <div class="hero-copy">
+              <span class="eyebrow">企业政策服务工作台</span>
+              <h2>把“政策难找、难判、难申报”压缩成一个清晰流程</h2>
+              <p class="muted">围绕企业画像、智能匹配、政策解读和顾问协同，给企业一个更像“专属政策看板”的使用体验。</p>
+              <div class="hero-points">
+                <span class="info-chip">政策匹配结果可解释</span>
+                <span class="info-chip">申报优先级一目了然</span>
+                <span class="info-chip">复杂问题可无缝转人工</span>
+              </div>
+            </div>
+            <div class="hero-figure">
+              <div class="report-card">
+                <div class="report-top">
+                  <span class="report-kicker">专属政策看板</span>
+                  <span class="report-chip">实时汇总</span>
+                </div>
+                <div class="report-score">
+                  <div>
+                    <span class="score-label">综合准备度</span>
+                    <div class="score-number"><strong>78</strong><small>/100</small></div>
+                  </div>
+                  <div class="score-ring">
+                    <span></span>
+                  </div>
+                </div>
+                <div class="report-bars">
+                  <div class="report-bar">
+                    <div class="bar-label"><span>画像完整度</span><strong>84%</strong></div>
+                    <div class="bar-track"><i style="width:84%"></i></div>
+                  </div>
+                  <div class="report-bar">
+                    <div class="bar-label"><span>匹配命中率</span><strong>67%</strong></div>
+                    <div class="bar-track"><i style="width:67%"></i></div>
+                  </div>
+                  <div class="report-bar">
+                    <div class="bar-label"><span>材料准备度</span><strong>52%</strong></div>
+                    <div class="bar-track"><i style="width:52%"></i></div>
+                  </div>
+                </div>
+              </div>
+              <div class="hero-flow">
+                <div class="flow-step active">
+                  <strong>01 企业画像</strong>
+                  <span>经营数据与资质能力完成归集</span>
+                </div>
+                <div class="flow-step">
+                  <strong>02 智能匹配</strong>
+                  <span>区分可申报、需完善、重点关注</span>
+                </div>
+                <div class="flow-step">
+                  <strong>03 问答协同</strong>
+                  <span>AI 解读结果，必要时提交工单</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="overview-grid">
+            <div class="panel panel-strong">
+              <div class="section-head">
+                <div>
+                  <h3>当前业务状态</h3>
+                  <p class="muted">先看结果规模，再决定下一步动作。</p>
+                </div>
+                <span class="section-badge">实时汇总</span>
+              </div>
+              <div class="stats stats-highlight">
+                <div class="stat">
+                  <span class="stat-icon">申</span>
+                  <span class="muted">可申报</span>
+                  <span class="num" id="sEligible">0</span>
+                  <span class="stat-meta">优先处理的机会池</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-icon">补</span>
+                  <span class="muted">需完善</span>
+                  <span class="num" id="sPotential">0</span>
+                  <span class="stat-meta">建议补齐条件后再申报</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-icon">优</span>
+                  <span class="muted">优先跟进</span>
+                  <span class="num" id="sPriority">0</span>
+                  <span class="stat-meta">推荐优先关注的政策数量</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-icon">单</span>
+                  <span class="muted">工单状态</span>
+                  <span class="num" id="sTicket">-</span>
+                  <span class="stat-meta">人工顾问协同进度</span>
+                </div>
+              </div>
+              <div class="action-panel">
+                <div class="section-head compact">
+                  <div>
+                    <h3>建议优先处理</h3>
+                    <p class="muted">让动作比说明更靠前。</p>
+                  </div>
+                </div>
+                <div id="nextActions" class="action-list muted">请先在“企业信息”页提交画像并执行政策匹配。</div>
+              </div>
+            </div>
+
+            <div class="side-stack">
+              <div class="panel">
+                <div class="section-head compact">
+                  <div>
+                    <h3>快捷入口</h3>
+                    <p class="muted">做成工作卡，而不是文字按钮。</p>
+                  </div>
+                </div>
+                <div class="quick-links">
+                  <button class="btn-ghost quick-link action-card" data-jump-view="profile">
+                    <span class="action-icon-box">企</span>
+                    <span class="action-copy">
+                      <strong>完善企业画像</strong>
+                      <small>录入规模、研发、资质与联系人信息</small>
+                    </span>
+                    <span class="action-index">01</span>
+                  </button>
+                  <button class="btn-ghost quick-link action-card" data-jump-view="match">
+                    <span class="action-icon-box">策</span>
+                    <span class="action-copy">
+                      <strong>查看匹配结果</strong>
+                      <small>快速识别可申报和需完善政策</small>
+                    </span>
+                    <span class="action-index">02</span>
+                  </button>
+                  <button class="btn-ghost quick-link action-card" data-jump-view="assistant">
+                    <span class="action-icon-box">智</span>
+                    <span class="action-copy">
+                      <strong>进入 AI 助手</strong>
+                      <small>解释政策口径与材料准备建议</small>
+                    </span>
+                    <span class="action-index">03</span>
+                  </button>
+                  <button class="btn-ghost quick-link action-card" data-jump-view="ticket">
+                    <span class="action-icon-box">单</span>
+                    <span class="action-copy">
+                      <strong>处理人工工单</strong>
+                      <small>提交问题并跟进顾问处理状态</small>
+                    </span>
+                    <span class="action-index">04</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="panel panel-soft">
+                <div class="section-head compact">
+                  <div>
+                    <h3>使用建议</h3>
+                    <p class="muted">把策略提示做成视觉面板，而不是长段说明。</p>
+                  </div>
+                </div>
+                <div class="guidance-board">
+                  <div class="guidance-item">
+                    <span class="guidance-no">A</span>
+                    <div>
+                      <strong>先补全画像</strong>
+                      <p class="muted">企业规模、资质、研发类信息会直接影响匹配结果。</p>
+                    </div>
+                  </div>
+                  <div class="guidance-item">
+                    <span class="guidance-no">B</span>
+                    <div>
+                      <strong>先做筛选，再做解读</strong>
+                      <p class="muted">优先查看“可申报”，有疑问再进入 AI 助手细看。</p>
+                    </div>
+                  </div>
+                  <div class="guidance-item">
+                    <span class="guidance-no">C</span>
+                    <div>
+                      <strong>复杂问题转人工</strong>
+                      <p class="muted">当材料边界或政策口径不明确时，及时提交工单。</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-profile" class="view">
+          <div class="panel">
+            <div class="section-head">
+              <div>
+                <h3>企业画像填写</h3>
+                <p class="muted">围绕基础信息、经营规模和创新能力建立企业画像。</p>
+              </div>
+              <span class="section-badge">匹配输入</span>
+            </div>
+            <div class="form-grid">
+              <label>企业名称<input id="enterprise_name" value="上海某科技有限公司" /></label>
+              <label>统一社会信用代码<input id="uscc" value="913100000000000001" /></label>
+              <label>所在区域
+                <select id="region_code">
+                  <option value="SH-ALL">全上海</option>
+                  <option value="SH-PD" selected>浦东新区 SH-PD</option>
+                  <option value="SH-MH">闵行区 SH-MH</option>
+                </select>
+              </label>
+              <label>行业代码<input id="industry_code" value="C39" /></label>
+              <label>联系人<input id="contact_name" value="张三" /></label>
+              <label>手机号<input id="contact_mobile" value="13800138000" /></label>
+              <label>员工规模
+                <select id="employee_scale">
+                  <option value="10-49">10-49</option>
+                  <option value="50-99" selected>50-99</option>
+                  <option value="100-299">100-299</option>
+                </select>
+              </label>
+              <label>营收区间<input id="revenue_range" value="1000万-5000万" /></label>
+              <label>研发占比(%)<input id="rd_ratio" type="number" value="6" /></label>
+              <label>知识产权数量<input id="ip_count" type="number" value="12" /></label>
+              <label style="grid-column:1 / -1">资质标签（逗号分隔）<input id="qualification_tags" value="高新技术企业,创新型中小企业" /></label>
+            </div>
+            <div style="margin-top:12px" class="two-col">
+              <button id="saveProfileBtn">保存企业信息</button>
+              <button class="btn-ghost" id="saveAndMatchBtn">保存并执行匹配</button>
+            </div>
+            <p id="profileMsg" class="muted" style="margin-top:10px"></p>
+          </div>
+        </section>
+
+        <section id="view-match" class="view">
+          <div class="two-col">
+            <div class="panel">
+              <div class="section-head">
+                <div>
+                  <h3>匹配结果</h3>
+                  <p class="muted">优先浏览政策标题、状态、得分和下一步动作。</p>
+                </div>
+                <span class="section-badge">结果列表</span>
+              </div>
+              <div id="matchSummary" class="muted">请先执行匹配。</div>
+              <div id="matchList" style="margin-top:10px"></div>
+            </div>
+            <div class="panel panel-detail">
+              <div class="section-head">
+                <div>
+                  <h3>政策详情</h3>
+                  <p class="muted">在这里展开阅读申报时间、材料和政策原文。</p>
+                </div>
+                <span class="section-badge">详情面板</span>
+              </div>
+              <div id="policyDetail" class="muted">点击左侧政策卡“查看详情”。</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-assistant" class="view">
+          <div class="panel">
+            <div class="section-head">
+              <div>
+                <h3>AI 政策助手</h3>
+                <p class="muted">围绕当前企业画像和已选政策做解释与追问。</p>
+              </div>
+              <span class="section-badge">智能问答</span>
+            </div>
+            <div id="chatBox" class="chat-box"></div>
+            <div class="two-col" style="margin-top:10px">
+              <input id="question" placeholder="例如：这条政策我还缺什么材料？" />
+              <button id="askBtn">发送问题</button>
+            </div>
+            <p class="muted" id="qaStatus" style="margin-top:8px">需要人工复核时，助手会提示你转人工。</p>
+            <div style="margin-top:10px" class="two-col">
+              <input id="qaCallbackTime" placeholder="转人工回呼时间（可选，例如：2026-03-05 16:00）" />
+              <button id="qaHandoffBtn" class="btn-ghost" disabled>一键转人工</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-ticket" class="view">
+          <div class="panel">
+            <div class="section-head">
+              <div>
+                <h3>工单提交与查询</h3>
+                <p class="muted">当政策条件需要人工确认时，在这里发起顾问协助。</p>
+              </div>
+              <span class="section-badge">人工协同</span>
+            </div>
+            <label>问题描述<textarea id="ticketDesc" rows="4" placeholder="请描述你需要顾问协助的内容"></textarea></label>
+            <label style="margin-top:8px">预约联系时间（可选）<input id="callbackTime" placeholder="例如：2026-03-05 10:00" /></label>
+            <div class="two-col" style="margin-top:10px">
+              <button id="createTicketBtn">提交工单</button>
+              <button class="btn-ghost" id="queryTicketBtn">查询最新工单状态</button>
+            </div>
+            <p id="ticketMsg" class="muted" style="margin-top:10px"></p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/workspace.js"></script>
+  </body>
+</html>

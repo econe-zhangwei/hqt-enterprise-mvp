@@ -1,0 +1,51 @@
+Metadata-Version: 2.4
+Name: hqt-enterprise-mvp
+Version: 0.1.0
+Summary: 惠企通企业端 MVP
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.116.0
+Requires-Dist: uvicorn[standard]>=0.35.0
+Requires-Dist: sqlalchemy>=2.0.36
+Requires-Dist: psycopg[binary]>=3.2.0
+Requires-Dist: pydantic>=2.10.0
+Requires-Dist: pydantic-settings>=2.7.0
+Requires-Dist: python-multipart>=0.0.20
+Provides-Extra: dev
+Requires-Dist: pytest>=8.3.0; extra == "dev"
+Requires-Dist: httpx>=0.28.0; extra == "dev"
+
+# 惠企通企业端 MVP
+
+企业端最小闭环：企业信息采集 -> 政策匹配 -> AI问答 -> 转人工工单。
+
+## 1. 本地启动（Docker）
+```bash
+docker compose up --build
+```
+
+启动后访问：
+- 前端页面: `http://localhost:8000/`
+- API 文档: `http://localhost:8000/docs`
+
+## 2. 本地启动（Python）
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .[dev]
+cp .env.example .env
+uvicorn app.main:app --reload
+```
+
+## 3. 运行测试
+```bash
+pytest
+```
+
+## 4. 当前实现说明
+1. 两段式流程已落地：`summary` 结果免登录，`full` 结果需登录 token。
+2. 登录接口为 mock 版本（`/auth/sms/send`、`/auth/sms/login`），真实短信通道后续接入。
+3. 工单接口需登录，且状态流转按 `pending -> processing -> resolved -> closed` 校验。
+4. AI 问答已实现 guardrails：高风险拒绝确定性结论、连续证据不足触发转人工。
+5. 政策数据先用内置样例策略，后续可扩展为采集/Skill 自动入库。
+6. 接口契约以 `docs/05-api-contract-v1.md` 为准。

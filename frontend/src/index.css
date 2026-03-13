@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+}
+
+body {
+  background-color: #f7f7f8;
+  color: #111827;
+  font-family: var(--font-sans);
+}
+
+/* Keep the app stable when browser extensions inject global resets. */
+html,
+body,
+#root {
+  font-size: 16px !important;
+  font-family: var(--font-sans) !important;
+}
+
+html {
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+
+#root input,
+#root textarea,
+#root select,
+#root button {
+  font-family: var(--font-sans) !important;
+}
+
+#root input,
+#root textarea,
+#root select {
+  font-size: 16px !important;
+  line-height: 24px !important;
+}
+
+#root button {
+  line-height: 20px !important;
+}
+
+#root [data-login-page] {
+  font-size: 16px !important;
+  font-family: var(--font-sans) !important;
+}
+
+#root [data-login-page] p,
+#root [data-login-page] span,
+#root [data-login-page] label,
+#root [data-login-page] h1,
+#root [data-login-page] h2,
+#root [data-login-page] h3,
+#root [data-login-page] h4 {
+  font-family: var(--font-sans) !important;
+}
+
+#root [data-login-page] input,
+#root [data-login-page] textarea,
+#root [data-login-page] select {
+  font-family: var(--font-sans) !important;
+  font-size: 16px !important;
+  line-height: 24px !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+#root [data-login-page] input::placeholder,
+#root [data-login-page] textarea::placeholder {
+  font-size: 16px !important;
+  line-height: 24px !important;
+}
+
+#root [data-login-page] button {
+  font-family: var(--font-sans) !important;
+}
+
+#root [data-login-page] [data-login-submit] {
+  font-size: 16px !important;
+  line-height: 24px !important;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}

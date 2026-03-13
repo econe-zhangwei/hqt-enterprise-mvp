@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: hqt-enterprise-mvp
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: commit
+    healthCheckPath: /docs
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./data/hqt.db
+      - key: CORS_ALLOW_ORIGINS
+        value: "*"
+      - key: LLM_PROVIDER
+        value: glm
+      - key: LLM_BASE_URL
+        value: https://open.bigmodel.cn/api/paas/v4
+      - key: LLM_MODEL
+        value: glm-4-flash
+      - key: LLM_TIMEOUT_SECONDS
+        value: "30"
